@@ -1,0 +1,15 @@
+---
+import type { App } from "@/data/site-data";
+
+type Props = Pick<App, "status">;
+
+const { status } = Astro.props;
+const label = status === "coming-soon" ? "Coming soon" : "Unknown";
+---
+
+<span
+  class="bg-muted text-muted-foreground inline-flex shrink-0 rounded-full px-2 py-1 text-xs font-medium"
+  data-status={status}
+>
+  {label}
+</span>

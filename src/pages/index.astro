@@ -1,0 +1,117 @@
+---
+import { getCollection } from "astro:content";
+import { getRelativeLocaleUrl } from "astro:i18n";
+import IconRss from "@/assets/icons/IconRss.svg";
+import IconArrowRight from "@/assets/icons/IconArrowRight.svg";
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import Socials from "@/components/Socials.astro";
+import Card from "@/components/Card.astro";
+import LinkButton from "@/components/LinkButton.astro";
+import AppsWidget from "@/components/AppsWidget.astro";
+import ReleasesWidget from "@/components/ReleasesWidget.astro";
+import { getSortedPosts } from "@/utils/getSortedPosts";
+import { profile } from "@/data/site-data";
+import config from "@/config";
+
+const locale = Astro.currentLocale ?? config.site.lang;
+const posts = await getCollection("posts");
+const recentPosts = getSortedPosts(posts).slice(0, 5);
+const homePath = getRelativeLocaleUrl(locale, "");
+---
+
+<Layout>
+  <Header />
+  <main
+    id="main-content"
+    data-layout="index"
+    data-home-path={homePath}
+    class="app-layout my-1"
+  >
+    <section id="bio" class="border-border border-b py-10 sm:py-14">
+      <div class="flex flex-col gap-6 sm:flex-row sm:items-center">
+        <div
+          class="bg-muted text-accent grid size-24 shrink-0 place-items-center rounded-2xl text-2xl font-semibold sm:size-28"
+          role="img"
+          aria-label="Profile portrait placeholder"
+        >
+          {profile.initials}
+        </div>
+        <div class="max-w-3xl">
+          <div class="flex flex-wrap items-center gap-3">
+            <h1 class="text-3xl font-bold tracking-tight sm:text-5xl">
+              {profile.heading}
+            </h1>
+            <a
+              href={`${import.meta.env.BASE_URL.replace(/\/?$/, "/")}rss.xml`}
+              class="focus-outline inline-block"
+              aria-label="RSS Feed"
+              title="RSS Feed"
+            >
+              <IconRss class="stroke-accent size-5 stroke-3" />
+            </a>
+          </div>
+          <p
+            class="text-muted-foreground mt-4 max-w-2xl text-lg leading-relaxed"
+          >
+            {profile.bio}
+          </p>
+          <div class="mt-4 flex items-center gap-2">
+            <span class="text-sm">Find me online:</span>
+            <Socials />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div
+      class="grid gap-12 py-10 lg:grid-cols-[minmax(0,2fr)_minmax(17rem,1fr)] lg:gap-16"
+    >
+      <section id="recent-posts" aria-labelledby="recent-posts-heading">
+        <div
+          class="border-border flex items-baseline justify-between gap-4 border-b pb-3"
+        >
+          <h2
+            id="recent-posts-heading"
+            class="text-2xl font-semibold tracking-wide"
+          >
+            Recent posts
+          </h2>
+          <LinkButton href={getRelativeLocaleUrl(locale, "posts")}>
+            All posts
+            <IconArrowRight class="inline-block rtl:-rotate-180" />
+          </LinkButton>
+        </div>
+        {
+          recentPosts.length > 0 ? (
+            <ul>
+              {recentPosts.map(post => (
+                <Card variant="h3" {...post} />
+              ))}
+            </ul>
+          ) : (
+            <p class="text-muted-foreground py-8">No posts published yet.</p>
+          )
+        }
+      </section>
+
+      <aside class="space-y-8" aria-label="Projects and release updates">
+        <AppsWidget />
+        <ReleasesWidget />
+      </aside>
+    </div>
+  </main>
+  <Footer />
+</Layout>
+
+<script>
+  document.addEventListener("astro:page-load", () => {
+    const indexLayout =
+      document.querySelector<HTMLElement>("#main-content")?.dataset;
+    const baseRoot = import.meta.env.BASE_URL.replace(/\/?$/, "/");
+    if (indexLayout?.layout) {
+      sessionStorage.setItem("backUrl", indexLayout.homePath ?? baseRoot);
+    }
+  });
+</script>
