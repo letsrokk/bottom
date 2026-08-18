@@ -11,9 +11,10 @@ export type ReleaseRepository = {
 };
 
 export const profile = {
-  initials: "YN",
-  heading: "Notes from a career in technology",
+  heading: "All Things Automation, Principal Quality Engineer and SDET",
   bio: "I write about information technology, artificial intelligence, quality assurance, and software development through the lens of personal experience.",
+  image: "/profile.png",
+  imageAlt: "Dmitry Mayer",
 };
 
 export const apps: App[] = [
@@ -32,6 +33,5 @@ export const apps: App[] = [
 ];
 
 export const releaseRepositories: ReleaseRepository[] = [
-  { owner: "your-username", repo: "example-app" },
-  { owner: "your-username", repo: "example-service" },
+  { owner: "letsrokk", repo: "bottom" },
 ];

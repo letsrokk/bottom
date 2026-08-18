@@ -31,13 +31,13 @@ const homePath = getRelativeLocaleUrl(locale, "");
   >
     <section id="bio" class="border-border border-b py-10 sm:py-14">
       <div class="flex flex-col gap-6 sm:flex-row sm:items-center">
-        <div
-          class="bg-muted text-accent grid size-24 shrink-0 place-items-center rounded-2xl text-2xl font-semibold sm:size-28"
-          role="img"
-          aria-label="Profile portrait placeholder"
-        >
-          {profile.initials}
-        </div>
+        <img
+          src={profile.image}
+          alt={profile.imageAlt}
+          width="450"
+          height="450"
+          class="border-border size-24 shrink-0 rounded-full border object-cover shadow-sm sm:size-28"
+        />
         <div class="max-w-3xl">
           <div class="flex flex-wrap items-center gap-3">
             <h1 class="text-3xl font-bold tracking-tight sm:text-5xl">
