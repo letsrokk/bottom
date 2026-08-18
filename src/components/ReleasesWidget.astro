@@ -7,10 +7,10 @@ import { releaseRepositories } from "@/data/site-data";
   aria-labelledby="releases-heading"
   data-repository-count={releaseRepositories.length}
 >
-  <h2 id="releases-heading" class="text-xl font-semibold">Latest releases</h2>
+  <h2 id="releases-heading" class="text-2xl font-semibold">Latest releases</h2>
   <p
     data-release-status
-    class="text-muted-foreground mt-3 text-sm"
+    class="text-muted-foreground mt-3 font-mono text-sm"
     role="status"
     aria-live="polite"
   >
@@ -44,12 +44,12 @@ import { releaseRepositories } from "@/data/site-data";
 
       const link = document.createElement("a");
       link.className =
-        "text-accent focus-outline font-medium break-words hover:underline";
+        "text-accent focus-outline text-lg font-medium break-words hover:underline";
       link.href = release.url;
       link.textContent = release.name;
 
       const meta = document.createElement("p");
-      meta.className = "text-muted-foreground mt-1 text-sm";
+      meta.className = "text-muted-foreground mt-1 font-mono text-sm";
       const date = new Intl.DateTimeFormat(undefined, {
         dateStyle: "medium",
       }).format(new Date(release.publishedAt));

@@ -4,7 +4,7 @@ import { apps } from "@/data/site-data";
 ---
 
 <section aria-labelledby="apps-heading" class="border-border border-b pb-8">
-  <h2 id="apps-heading" class="text-xl font-semibold">Apps &amp; services</h2>
+  <h2 id="apps-heading" class="text-2xl font-semibold">Apps &amp; services</h2>
   <ul class="mt-3 space-y-1">
     {
       apps.map(app => (
@@ -13,12 +13,12 @@ import { apps } from "@/data/site-data";
             <div class="min-w-0">
               <a
                 href={app.url}
-                class="text-accent focus-outline font-medium break-words hover:underline"
+                class="text-accent focus-outline text-lg font-medium break-words hover:underline"
               >
                 {app.name}
               </a>
               {app.description && (
-                <p class="text-muted-foreground mt-1 text-sm">
+                <p class="text-muted-foreground mt-1 font-mono text-sm">
                   {app.description}
                 </p>
               )}

@@ -1,6 +1,7 @@
 import {
   getEffectiveTheme,
   getStoredThemePreference,
+  getThemeControlState,
   parseThemePreference,
   THEME_PREFERENCE_KEY,
   type ThemePreference,
@@ -20,8 +21,13 @@ function reflect(): void {
   const root = document.firstElementChild;
   root?.setAttribute("data-theme", themeValue);
   root?.classList.toggle("dark", themeValue === "dark");
-  const select = document.querySelector<HTMLSelectElement>("#theme-select");
-  if (select) select.value = preference;
+  for (const state of getThemeControlState(preference)) {
+    document
+      .querySelector<HTMLButtonElement>(
+        `[data-theme-preference="${state.preference}"]`
+      )
+      ?.setAttribute("aria-pressed", String(state.pressed));
+  }
 
   // Fill <meta name="theme-color"> with the computed background colour so
   // Android's browser chrome matches the page background.
@@ -33,17 +39,20 @@ function reflect(): void {
 
 function setup(): void {
   reflect();
-  const select = document.querySelector<HTMLSelectElement>("#theme-select");
-  if (!select) return;
-  select.onchange = () => {
-    preference = parseThemePreference(select.value);
-    try {
-      localStorage.setItem(THEME_PREFERENCE_KEY, preference);
-    } catch {
-      // The selected theme still applies when browser storage is unavailable.
-    }
-    reflect();
-  };
+  const buttons = document.querySelectorAll<HTMLButtonElement>(
+    "[data-theme-preference]"
+  );
+  for (const button of buttons) {
+    button.onclick = () => {
+      preference = parseThemePreference(button.dataset.themePreference ?? null);
+      try {
+        localStorage.setItem(THEME_PREFERENCE_KEY, preference);
+      } catch {
+        // The selected theme still applies when browser storage is unavailable.
+      }
+      reflect();
+    };
+  }
 }
 
 setup();

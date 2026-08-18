@@ -3,7 +3,7 @@ import { defineAstroPaperConfig } from "./src/types/config";
 export default defineAstroPaperConfig({
   site: {
     url: "https://rokk.club/",
-    title: "Dmitry Mayer",
+    title: "Rokk Bottom",
     description: "All Things Automation, Principal Quality Engineer and SDET.",
     author: "Dmitry Mayer",
     profile: "https://www.linkedin.com/in/dmitry-mayer-71525477/",
@@ -32,6 +32,7 @@ export default defineAstroPaperConfig({
     {
       name: "linkedin",
       url: "https://www.linkedin.com/in/dmitry-mayer-71525477/",
+      linkTitle: "Dmitry Mayer on LinkedIn",
     },
   ],
   shareLinks: [

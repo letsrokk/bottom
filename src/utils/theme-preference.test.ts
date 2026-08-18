@@ -3,6 +3,7 @@ import {
   getEffectiveTheme,
   getNextThemePreference,
   getStoredThemePreference,
+  getThemeControlState,
   parseThemePreference,
 } from "./theme-preference";
 
@@ -37,4 +38,15 @@ describe("theme preference", () => {
     expect(getNextThemePreference("light")).toBe("dark");
     expect(getNextThemePreference("dark")).toBe("system");
   });
+
+  it.each(["system", "light", "dark"] as const)(
+    "marks only the stored %s preference as selected",
+    preference => {
+      expect(getThemeControlState(preference)).toEqual([
+        { preference: "system", pressed: preference === "system" },
+        { preference: "light", pressed: preference === "light" },
+        { preference: "dark", pressed: preference === "dark" },
+      ]);
+    }
+  );
 });

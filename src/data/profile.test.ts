@@ -7,7 +7,7 @@ describe("public profile configuration", () => {
   test("uses Dmitry Mayer's identity and LinkedIn profile", () => {
     expect(astroPaperConfig.site).toMatchObject({
       url: "https://rokk.club/",
-      title: "Dmitry Mayer",
+      title: "Rokk Bottom",
       author: "Dmitry Mayer",
       profile: "https://www.linkedin.com/in/dmitry-mayer-71525477/",
     });
@@ -15,6 +15,7 @@ describe("public profile configuration", () => {
       {
         name: "linkedin",
         url: "https://www.linkedin.com/in/dmitry-mayer-71525477/",
+        linkTitle: "Dmitry Mayer on LinkedIn",
       },
     ]);
   });

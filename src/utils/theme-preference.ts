@@ -2,6 +2,14 @@ export type ThemePreference = "system" | "light" | "dark";
 export type EffectiveTheme = Exclude<ThemePreference, "system">;
 
 export const THEME_PREFERENCE_KEY = "theme-preference";
+export const THEME_PREFERENCES = ["system", "light", "dark"] as const;
+
+export function getThemeControlState(preference: ThemePreference) {
+  return THEME_PREFERENCES.map(value => ({
+    preference: value,
+    pressed: value === preference,
+  }));
+}
 
 export function getStoredThemePreference(
   storage: Pick<Storage, "getItem">
