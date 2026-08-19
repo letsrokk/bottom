@@ -16,6 +16,7 @@ export interface UIStrings {
     tagLabel: string;
     backToTop: string;
     goBack: string;
+    editPage: string;
     previousPost: string;
     nextPost: string;
   };
