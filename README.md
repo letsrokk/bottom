@@ -15,10 +15,16 @@ Run the project checks before publishing:
 
 ```sh
 pnpm test
+pnpm lint:content
 pnpm format:check
 pnpm lint
 pnpm build
 ```
+
+All changes to `main` use pull requests. Site checks run only when site
+sources change, while Markdown and MDX content changes also run the content
+linter. Non-draft pull requests from repository branches merge automatically
+after every required check passes.
 
 ## Customize
 
