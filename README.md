@@ -24,7 +24,8 @@ pnpm build
 All changes to `main` use pull requests. Site checks run only when site
 sources change, while Markdown and MDX content changes also run the content
 linter. Non-draft pull requests from repository branches merge automatically
-after every required check passes.
+after every required check passes. Fork pull requests require a maintainer to
+add the `automerge` label again after each new commit.
 
 ## Customize
 
