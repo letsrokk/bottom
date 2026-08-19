@@ -22,10 +22,6 @@ export default defineAstroPaperConfig({
     dynamicOgImage: false,
     showArchives: true,
     showBackButton: true,
-    editPost: {
-      enabled: true,
-      url: "https://github.com/letsrokk/bottom/edit/main/",
-    },
     search: "pagefind",
   },
   socials: [
