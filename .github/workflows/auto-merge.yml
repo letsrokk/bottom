@@ -31,13 +31,19 @@ jobs:
           HEAD_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name }}
           BASE_REPOSITORY: ${{ github.repository }}
         run: |
-          auto_merge_enabled=$(gh pr view "$PR_URL" --json autoMergeRequest --jq '.autoMergeRequest != null')
+          auto_merge_enabled=$(
+            gh pr view "$PR_URL" --json autoMergeRequest \
+              --jq '.autoMergeRequest != null'
+          )
           if [[ "$auto_merge_enabled" == "true" ]]; then
             gh pr merge --disable-auto "$PR_URL"
           fi
 
           if [[ "$HEAD_REPOSITORY" != "$BASE_REPOSITORY" ]]; then
-            label_present=$(gh pr view "$PR_URL" --json labels --jq 'any(.labels[]; .name == "automerge")')
+            label_present=$(
+              gh pr view "$PR_URL" --json labels \
+                --jq 'any(.labels[]; .name == "automerge")'
+            )
             if [[ "$label_present" == "true" ]]; then
               gh pr edit "$PR_URL" --remove-label automerge
             fi
@@ -63,3 +69,33 @@ jobs:
         run: >-
           gh pr merge --auto --squash "$PR_URL"
           --match-head-commit "$HEAD_SHA"
+
+      - name: Start the merge watcher
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          HEAD_BRANCH: ${{ github.event.pull_request.head.ref }}
+          HEAD_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name }}
+          BASE_REPOSITORY: ${{ github.repository }}
+        run: |
+          jq -n \
+            --arg pr_number "$PR_NUMBER" \
+            --arg pr_url "$PR_URL" \
+            --arg head_sha "$HEAD_SHA" \
+            --arg head_branch "$HEAD_BRANCH" \
+            --arg head_repository "$HEAD_REPOSITORY" \
+            --arg base_repository "$BASE_REPOSITORY" \
+            '{
+              event_type: "watch-auto-merge",
+              client_payload: {
+                pr_number: $pr_number,
+                pr_url: $pr_url,
+                head_sha: $head_sha,
+                head_branch: $head_branch,
+                head_repository: $head_repository,
+                base_repository: $base_repository
+              }
+            }' |
+            gh api --method POST "repos/$BASE_REPOSITORY/dispatches" --input -

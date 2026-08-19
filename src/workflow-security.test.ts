@@ -7,6 +7,10 @@ const autoMergeWorkflowPath = ".github/workflows/auto-merge.yml";
 const autoMergeWorkflow = existsSync(autoMergeWorkflowPath)
   ? readFileSync(autoMergeWorkflowPath, "utf8")
   : "";
+const autoMergeWatcherPath = ".github/workflows/auto-merge-watcher.yml";
+const autoMergeWatcher = existsSync(autoMergeWatcherPath)
+  ? readFileSync(autoMergeWatcherPath, "utf8")
+  : "";
 const workflowFiles = readdirSync(".github/workflows")
   .filter(path => path.endsWith(".yml") || path.endsWith(".yaml"))
   .map(path => `.github/workflows/${path}`);
@@ -57,13 +61,33 @@ describe("GitHub Actions security", () => {
     expect(autoMergeWorkflow).toContain("automerge");
     expect(autoMergeWorkflow).toContain("gh pr merge --auto --squash");
     expect(autoMergeWorkflow).toContain('--match-head-commit "$HEAD_SHA"');
+    expect(autoMergeWorkflow).toContain("watch-auto-merge");
     expect(autoMergeWorkflow).not.toContain("|| true");
     expect(autoMergeWorkflow).not.toContain("--admin");
+  });
+
+  test("watches native auto-merge before dispatching deployment", () => {
+    expect(autoMergeWatcher).toContain("repository_dispatch:");
+    expect(autoMergeWatcher).toContain("watch-auto-merge");
+    expect(autoMergeWatcher).toContain("timeout-minutes: 360");
+    expect(autoMergeWatcher).toContain(
+      "${{ github.event.client_payload.head_sha }}"
+    );
+    expect(autoMergeWatcher).toContain("sleep 30");
+    expect(autoMergeWatcher).toContain("pulls/$PR_NUMBER");
+    expect(autoMergeWatcher).toContain(".head.sha");
+    expect(autoMergeWatcher).toContain("gh workflow run deploy.yml");
+    expect(autoMergeWatcher).toContain("--force-with-lease");
+    expect(autoMergeWatcher).not.toContain("--admin");
   });
 
   test("guards every Pages job to the main branch", () => {
     expect(deployWorkflow).toMatch(/push:\s*\n\s+branches:\s*\[main\]/);
     expect(deployWorkflow).toContain("workflow_dispatch:");
+    expect(deployWorkflow).toContain("expected_sha:");
+    expect(deployWorkflow).toContain(
+      "inputs.expected_sha == '' || inputs.expected_sha == github.sha"
+    );
     expect(
       deployWorkflow.match(/github\.ref == 'refs\/heads\/main'/g)
     ).toHaveLength(2);

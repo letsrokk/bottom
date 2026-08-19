@@ -11,6 +11,10 @@ pushes to `main` are blocked by the repository ruleset.
 The deployment workflow can also be started manually from `main`. Manual runs
 from any other branch skip both the build and deploy jobs.
 
+Auto-merge dispatches the deployment after GitHub merges the pull request. The
+dispatch must match the current `main` commit before either job can run. An
+hourly reconciliation run retries a missing deployment.
+
 ## GitHub settings
 
 1. Open **Settings → Pages** in the repository.
