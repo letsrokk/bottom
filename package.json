@@ -14,7 +14,8 @@
     "astro": "astro",
     "format:check": "prettier --check .",
     "format": "prettier --write .",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "lint:content": "remark --frail \"src/content/**/*.{md,mdx}\""
   },
   "dependencies": {
     "@astrojs/markdown-remark": "^7.2.2",
@@ -48,6 +49,11 @@
     "prettier": "3.9.3",
     "prettier-plugin-astro": "0.14.1",
     "prettier-plugin-tailwindcss": "^0.8.0",
+    "remark-cli": "^12.0.1",
+    "remark-frontmatter": "^5.0.0",
+    "remark-mdx": "^3.1.1",
+    "remark-preset-lint-recommended": "^7.0.1",
+    "remark-validate-links": "^13.1.0",
     "typescript": "^6.0.3",
     "vitest": "^4.1.10"
   }
