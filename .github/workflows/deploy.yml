@@ -4,6 +4,11 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      expected_sha:
+        description: Deploy only when this is the current main commit
+        required: false
+        type: string
 
 concurrency:
   group: pages
@@ -11,7 +16,9 @@ concurrency:
 
 jobs:
   build:
-    if: github.ref == 'refs/heads/main'
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      (inputs.expected_sha == '' || inputs.expected_sha == github.sha)
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -26,7 +33,9 @@ jobs:
 
   deploy:
     needs: build
-    if: github.ref == 'refs/heads/main'
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      (inputs.expected_sha == '' || inputs.expected_sha == github.sha)
     runs-on: ubuntu-latest
     permissions:
       pages: write

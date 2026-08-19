@@ -1,0 +1,137 @@
+name: Auto-merge watcher
+
+on:
+  repository_dispatch:
+    types: [watch-auto-merge]
+  schedule:
+    - cron: "17 * * * *"
+
+permissions: {}
+
+jobs:
+  watch:
+    name: Watch auto-merge
+    if: github.event_name == 'repository_dispatch'
+    permissions:
+      actions: write
+      contents: write
+      pull-requests: read
+    concurrency:
+      group: >-
+        auto-merge-watch-${{ github.event.client_payload.pr_number }}-
+        ${{ github.event.client_payload.head_sha }}
+      cancel-in-progress: true
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: main
+
+      - name: Wait for merge, deploy, and delete the source branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.client_payload.pr_number }}
+          HEAD_SHA: ${{ github.event.client_payload.head_sha }}
+          HEAD_BRANCH: ${{ github.event.client_payload.head_branch }}
+          HEAD_REPOSITORY: ${{ github.event.client_payload.head_repository }}
+          BASE_REPOSITORY: ${{ github.repository }}
+        run: |
+          state=OPEN
+          for attempt in {1..700}; do
+            pr_json=$(gh api "repos/$BASE_REPOSITORY/pulls/$PR_NUMBER")
+            current_head=$(jq -r '.head.sha' <<< "$pr_json")
+            current_branch=$(jq -r '.head.ref' <<< "$pr_json")
+            current_repository=$(
+              jq -r '.head.repo.full_name // ""' <<< "$pr_json"
+            )
+
+            if [[ "$current_head" != "$HEAD_SHA" ||
+              "$current_branch" != "$HEAD_BRANCH" ]]; then
+              echo "A newer pull request head superseded this watcher"
+              exit 0
+            fi
+            if [[ -n "$current_repository" &&
+              "$current_repository" != "$HEAD_REPOSITORY" ]]; then
+              echo "Pull request repository metadata changed"
+              exit 1
+            fi
+
+            if [[ $(jq -r '.merged' <<< "$pr_json") == "true" ]]; then
+              state=MERGED
+              break
+            fi
+            state=$(jq -r '.state | ascii_upcase' <<< "$pr_json")
+            if [[ "$state" == "CLOSED" ]]; then
+              echo "Pull request closed without merging"
+              exit 0
+            fi
+            sleep 30
+          done
+
+          if [[ "$state" != "MERGED" ]]; then
+            echo "Timed out waiting for auto-merge"
+            exit 1
+          fi
+
+          merge_sha=$(jq -r '.merge_commit_sha' <<< "$pr_json")
+          gh workflow run deploy.yml --repo "$BASE_REPOSITORY" \
+            --ref main -f "expected_sha=$merge_sha"
+
+          if [[ "$current_repository" == "$BASE_REPOSITORY" ]]; then
+            set +e
+            remote_ref=$(
+              git ls-remote --exit-code --heads origin \
+                "refs/heads/$HEAD_BRANCH" 2>&1
+            )
+            remote_status=$?
+            set -e
+
+            if [[ "$remote_status" == "2" ]]; then
+              echo "Source branch was already deleted"
+              exit 0
+            fi
+            if [[ "$remote_status" != "0" ]]; then
+              echo "$remote_ref" >&2
+              exit "$remote_status"
+            fi
+
+            current_ref=${remote_ref%%[[:space:]]*}
+            if [[ "$current_ref" == "$HEAD_SHA" ]]; then
+              git push \
+                --force-with-lease="refs/heads/$HEAD_BRANCH:$HEAD_SHA" \
+                origin ":refs/heads/$HEAD_BRANCH"
+            else
+              echo "Source branch moved after merge; leaving it in place"
+            fi
+          fi
+
+  reconcile:
+    name: Reconcile Pages deployment
+    if: github.event_name == 'schedule'
+    permissions:
+      actions: write
+      contents: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Dispatch a missing main deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          main_sha=$(gh api "repos/$REPOSITORY/commits/main" --jq '.sha')
+          has_run=$(
+            gh run list --repo "$REPOSITORY" --workflow deploy.yml \
+              --branch main --limit 20 \
+              --json headSha,status,conclusion \
+              --jq "any(.[]; .headSha == \"$main_sha\" and
+                (.status != \"completed\" or
+                .conclusion == \"success\"))"
+          )
+
+          if [[ "$has_run" == "false" ]]; then
+            gh workflow run deploy.yml --repo "$REPOSITORY" \
+              --ref main -f "expected_sha=$main_sha"
+          fi
