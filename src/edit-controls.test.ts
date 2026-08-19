@@ -5,6 +5,10 @@ import { join } from "node:path";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 
 let outputDirectory: string;
+let homePage: string;
+let aboutPage: string;
+
+const linkedinUrl = "https://www.linkedin.com/in/dmitry-mayer-71525477/";
 
 function getHtmlFiles(directory: string): string[] {
   return readdirSync(directory, { withFileTypes: true }).flatMap(entry => {
@@ -27,6 +31,11 @@ describe("published pages", () => {
         stdio: "pipe",
       }
     );
+    homePage = readFileSync(join(outputDirectory, "index.html"), "utf8");
+    aboutPage = readFileSync(
+      join(outputDirectory, "about", "index.html"),
+      "utf8"
+    );
   }, 60_000);
 
   afterAll(() => {
@@ -43,5 +52,29 @@ describe("published pages", () => {
       expect(page).not.toContain(">Edit page<");
       expect(page).not.toContain("github.com/letsrokk/bottom/edit/");
     }
+  });
+
+  test("shows the concise biography on the home page", () => {
+    expect(homePage).toContain(
+      "I write about engineering quality, software development, and artificial intelligence through the lens of personal experience."
+    );
+  });
+
+  test("shows the portrait and privacy-safe biography on the About page", () => {
+    expect(aboutPage).toContain('src="/profile.png"');
+    expect(aboutPage).toContain('alt="Dmitry Mayer"');
+    expect(aboutPage).toContain("I’m originally from Russia");
+    expect(aboutPage).toContain("lived and worked across Europe and Asia");
+    expect(aboutPage).toContain("more than 15 years");
+  });
+
+  test("offers only LinkedIn in the About page contact section", () => {
+    const contactSection = aboutPage.match(
+      /<section id="contact"[\s\S]*?<\/section>/
+    )?.[0];
+
+    expect(contactSection).toBeDefined();
+    expect(contactSection?.match(/href=/g)).toHaveLength(1);
+    expect(contactSection).toContain(`href="${linkedinUrl}"`);
   });
 });
