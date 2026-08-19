@@ -12,7 +12,7 @@ export type ReleaseRepository = {
 
 export const profile = {
   heading: "All Things Automation, Principal Quality Engineer and SDET",
-  bio: "I write about information technology, artificial intelligence, quality assurance, and software development through the lens of personal experience.",
+  bio: "I write about engineering quality, software development, and artificial intelligence through the lens of personal experience.",
   image: "/profile.png",
   imageAlt: "Dmitry Mayer",
 };
