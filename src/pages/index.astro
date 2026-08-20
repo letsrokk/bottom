@@ -10,13 +10,16 @@ import Card from "@/components/Card.astro";
 import LinkButton from "@/components/LinkButton.astro";
 import AppsWidget from "@/components/AppsWidget.astro";
 import ReleasesWidget from "@/components/ReleasesWidget.astro";
+import MediumStories from "@/components/MediumStories.astro";
 import { getSortedPosts } from "@/utils/getSortedPosts";
-import { profile } from "@/data/site-data";
+import { fetchMediumPosts } from "@/utils/medium";
+import { medium, profile } from "@/data/site-data";
 import config from "@/config";
 
 const locale = Astro.currentLocale ?? config.site.lang;
 const posts = await getCollection("posts");
-const recentPosts = getSortedPosts(posts).slice(0, 5);
+const recentPosts = getSortedPosts(posts).slice(0, 2);
+const mediumStories = await fetchMediumPosts(medium.feedUrl, 3);
 const homePath = getRelativeLocaleUrl(locale, "");
 const [headingLead, ...headingRest] = profile.heading.split(",");
 const headingTail = headingRest.join(",").trim();
@@ -34,35 +37,43 @@ const headingTail = headingRest.join(",").trim();
       class="grid gap-12 py-8 lg:grid-cols-[minmax(0,3fr)_minmax(22rem,2fr)] lg:gap-0"
     >
       <section
-        id="recent-posts"
+        id="articles"
         class="border-border border-b lg:border-e lg:border-b-0 lg:pe-8 xl:pe-12"
-        aria-labelledby="recent-posts-heading"
+        aria-labelledby="articles-heading"
       >
-        <div
-          class="border-border flex items-baseline justify-between gap-4 border-b pb-3"
-        >
-          <h2
-            id="recent-posts-heading"
-            class="text-2xl font-semibold tracking-wide"
+        <h2 id="articles-heading" class="text-2xl font-semibold tracking-wide">
+          Articles
+        </h2>
+
+        <section id="latest-posts" aria-labelledby="latest-posts-heading">
+          <div
+            class="border-border mt-6 flex items-baseline justify-between gap-4 border-b pb-3"
           >
-            Recent posts
-          </h2>
-          <LinkButton href={getRelativeLocaleUrl(locale, "posts")}>
-            All posts
-            <IconArrowRight class="inline-block rtl:-rotate-180" />
-          </LinkButton>
-        </div>
-        {
-          recentPosts.length > 0 ? (
-            <ul>
-              {recentPosts.map(post => (
-                <Card variant="h3" {...post} />
-              ))}
-            </ul>
-          ) : (
-            <p class="text-muted-foreground py-8">No posts published yet.</p>
-          )
-        }
+            <h3
+              id="latest-posts-heading"
+              class="text-xl font-semibold tracking-wide"
+            >
+              Latest posts
+            </h3>
+            <LinkButton href={getRelativeLocaleUrl(locale, "posts")}>
+              All posts
+              <IconArrowRight class="inline-block rtl:-rotate-180" />
+            </LinkButton>
+          </div>
+          {
+            recentPosts.length > 0 ? (
+              <ul>
+                {recentPosts.map(post => (
+                  <Card variant="h4" {...post} />
+                ))}
+              </ul>
+            ) : (
+              <p class="text-muted-foreground py-8">No posts published yet.</p>
+            )
+          }
+        </section>
+
+        <MediumStories profileUrl={medium.profileUrl} stories={mediumStories} />
       </section>
 
       <aside

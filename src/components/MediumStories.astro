@@ -1,0 +1,67 @@
+---
+import IconArrowRight from "@/assets/icons/IconArrowRight.svg";
+import IconTumbleweed from "@/assets/icons/IconTumbleweed.svg";
+import type { MediumPost } from "@/utils/medium";
+import Datetime from "./Datetime.astro";
+import LinkButton from "./LinkButton.astro";
+
+type Props = {
+  profileUrl: string;
+  stories: MediumPost[];
+};
+
+const { profileUrl, stories } = Astro.props;
+---
+
+<section id="latest-stories" aria-labelledby="latest-stories-heading">
+  <div
+    class="border-border mt-10 flex items-baseline justify-between gap-4 border-b pb-3"
+  >
+    <h3 id="latest-stories-heading" class="text-xl font-semibold tracking-wide">
+      Latest stories
+    </h3>
+    <LinkButton href={profileUrl}>
+      More on Medium
+      <IconArrowRight class="inline-block rtl:-rotate-180" />
+    </LinkButton>
+  </div>
+
+  {
+    stories.length > 0 ? (
+      <ul>
+        {stories.map(story => (
+          <li class="my-6">
+            <a
+              href={story.url}
+              class:list={[
+                "text-accent inline-block text-xl font-medium",
+                "decoration-dashed underline-offset-4 hover:underline",
+                "focus-visible:no-underline focus-visible:underline-offset-0",
+              ]}
+            >
+              <h4>{story.title}</h4>
+            </a>
+            <Datetime pubDatetime={story.publishedAt} />
+            {story.excerpt && (
+              <p class="text-lg leading-relaxed">{story.excerpt}</p>
+            )}
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <div
+        data-medium-empty-state
+        class="border-border bg-muted/30 text-muted-foreground mt-6 flex min-h-48 flex-col items-center justify-center gap-4 rounded-lg border border-dashed p-8 text-center"
+      >
+        <IconTumbleweed
+          data-tumbleweed-icon
+          aria-hidden="true"
+          class="size-20"
+        />
+        <p class="text-base leading-relaxed">
+          These are not the stories you're looking for
+        </p>
+      </div>
+    )
+  }
+</section>

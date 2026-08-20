@@ -5,7 +5,7 @@ import { toTransitionName } from "@/utils/toTransitionName";
 import Datetime from "./Datetime.astro";
 
 type Props = {
-  variant?: "h2" | "h3";
+  variant?: "h2" | "h3" | "h4";
 } & CollectionEntry<"posts">;
 
 const { variant: Heading = "h2", id, data, filePath } = Astro.props;

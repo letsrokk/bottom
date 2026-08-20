@@ -17,6 +17,11 @@ export const profile = {
   imageAlt: "Dmitry Mayer",
 };
 
+export const medium = {
+  profileUrl: "https://letsrokk.medium.com",
+  feedUrl: "https://letsrokk.medium.com/feed",
+};
+
 export const apps: App[] = [
   {
     name: "Example App",

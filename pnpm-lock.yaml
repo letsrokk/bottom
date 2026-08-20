@@ -32,6 +32,12 @@ importers:
       dayjs:
         specifier: ^1.11.21
         version: 1.11.21
+      fast-xml-parser:
+        specifier: ^5.10.1
+        version: 5.10.1
+      fast-xml-validator:
+        specifier: ^1.4.2
+        version: 1.4.2
       lodash.kebabcase:
         specifier: ^4.1.1
         version: 4.1.1
@@ -765,8 +771,20 @@ packages:
       '@emnapi/core': ^1.7.1 || ^2.0.0-alpha.4
       '@emnapi/runtime': ^1.7.1 || ^2.0.0-alpha.4
 
+  '@nodable/base-output-builder@2.0.0':
+    resolution: {integrity: sha512-DECrOg3zZuhOx2Iesj1mkINjFvasP3HV3pjGBs3A104V4zJIZJOeqOzF5qNWRl17oGheNsfnqINwUBVu6n7wrQ==}
+
+  '@nodable/compact-builder@2.0.0':
+    resolution: {integrity: sha512-TLyrdyV+KIh9n7waO45m9LsbxpoNXkHfXmQ4tWgXJynsJwCCZm2qT5NFvcjzWq3AN+tsA7XpmQOwAC5vbqzjkg==}
+
+  '@nodable/entities@2.2.0':
+    resolution: {integrity: sha512-9uGyhaQavEUMC8AIddIjau4NsnsXhou+j5sBAGojCM1oxmQpVKTWR/9JxABD6UAv12vpIms55fPZKFQEhG6uBg==}
+
   '@nodable/entities@3.0.0':
     resolution: {integrity: sha512-8L9xFeTYKhm49xfIypoe2W5wV1m/3Z58kT+7kR9A8OyFxcPduI4VmxaUMQyKYrRjUoLLSXv6EKKID5Tvj9cUVw==}
+
+  '@nodable/flexible-xml-parser@1.11.3':
+    resolution: {integrity: sha512-fNX6VI3qlgTogvjnE80OWoGrFJ05oeq3lTr13mCtl64zbOEW+cqAKnxTxE+n6S4dGXcBzDVuCK9K7UvcWZPniA==}
 
   '@npmcli/config@8.3.4':
     resolution: {integrity: sha512-01rtHedemDNhUXdicU7s+QYz/3JyV5Naj84cvdXGH4mgCdL+agmSYaLF4LUG4vMCLzhBO8YtS0gPpH1FGvbgAw==}
@@ -1583,6 +1601,9 @@ packages:
   destr@2.0.5:
     resolution: {integrity: sha512-ugFTXCtDZunbzasqBxrK93Ik/DRYsO6S/fedkWEMKqt04xZ4csmnmwGDBAb07QWNaGMAmnTIemsYZCksjATwsA==}
 
+  detailed-xml-validator@2.2.0:
+    resolution: {integrity: sha512-dffr/kTqIqq2BpybOEddhQRF1KBQcLdKHww9/urAKwZC1+epDnPnbT5IOb0ffCT4QTioAvKYEsojXeOYk030UQ==}
+
   detect-libc@2.1.2:
     resolution: {integrity: sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ==}
     engines: {node: '>=8'}
@@ -1797,6 +1818,9 @@ packages:
   fast-xml-parser@5.10.1:
     resolution: {integrity: sha512-IEMIf7298kXuZSRFoGfMYrl7is8LpavODgbNz1cwIudv7KwVFnuU+UsMporfq6PD6aXSlawZlARiA3UywCTfMw==}
     hasBin: true
+
+  fast-xml-validator@1.4.2:
+    resolution: {integrity: sha512-dN1Z5tBDxhJ1e8ccerKI+MWdwZ8oUWhWTSYISFeHKUOzlaZrwnwxcHKN3d7R9IOqtCtk6ynbEiZhjo/8RtDwIA==}
 
   fault@2.0.1:
     resolution: {integrity: sha512-WtySTkS4OKev5JtpHXnib4Gxiurzh5NCGvWrFaZ34m6JehfTUhKZvn9njTfw48t6JumVQOmrKqpmGcdwxnhqBQ==}
@@ -2028,6 +2052,9 @@ packages:
   is-plain-obj@4.1.0:
     resolution: {integrity: sha512-+Pgi+vMuUNkJyExiMBt5IlFoMyKnr5zhJ4Uspz58WOhBF5QoIZkFyNHIbBAtHwzVAgk5RtndVNsDRN61/mmDqg==}
     engines: {node: '>=12'}
+
+  is-unsafe@1.0.1:
+    resolution: {integrity: sha512-CLK2+VdgERgD96EYm5lUQssZYlRg2tkZnbsxZoacmSiRxiFJ4Nk4SzjCl+Ur+v3kXIY9dTIdb3IH22y1mZ56LA==}
 
   is-unsafe@2.0.0:
     resolution: {integrity: sha512-2LdV822R+wmI86unXA93WCFpL6g+av8ynWk0nrHyJqGop5VoocYsSLFgN8jrfalT6iGeLNM4KXuVSsULP53kEA==}
@@ -4260,7 +4287,28 @@ snapshots:
       '@tybys/wasm-util': 0.10.3
     optional: true
 
+  '@nodable/base-output-builder@2.0.0':
+    dependencies:
+      '@nodable/entities': 2.2.0
+      is-unsafe: 1.0.1
+      path-expression-matcher: 1.6.2
+      strnum: 2.4.1
+
+  '@nodable/compact-builder@2.0.0':
+    dependencies:
+      '@nodable/base-output-builder': 2.0.0
+      path-expression-matcher: 1.6.2
+
+  '@nodable/entities@2.2.0': {}
+
   '@nodable/entities@3.0.0': {}
+
+  '@nodable/flexible-xml-parser@1.11.3':
+    dependencies:
+      '@nodable/base-output-builder': 2.0.0
+      '@nodable/compact-builder': 2.0.0
+      path-expression-matcher: 1.6.2
+      xml-naming: 0.3.0
 
   '@npmcli/config@8.3.4':
     dependencies:
@@ -5120,6 +5168,12 @@ snapshots:
 
   destr@2.0.5: {}
 
+  detailed-xml-validator@2.2.0:
+    dependencies:
+      '@nodable/base-output-builder': 2.0.0
+      '@nodable/compact-builder': 2.0.0
+      '@nodable/flexible-xml-parser': 1.11.3
+
   detect-libc@2.1.2: {}
 
   devalue@5.9.0: {}
@@ -5387,6 +5441,12 @@ snapshots:
       is-unsafe: 2.0.0
       path-expression-matcher: 1.6.2
       strnum: 2.4.1
+      xml-naming: 0.3.0
+
+  fast-xml-validator@1.4.2:
+    dependencies:
+      detailed-xml-validator: 2.2.0
+      path-expression-matcher: 1.6.2
       xml-naming: 0.3.0
 
   fault@2.0.1:
@@ -5678,6 +5738,8 @@ snapshots:
   is-number@7.0.0: {}
 
   is-plain-obj@4.1.0: {}
+
+  is-unsafe@1.0.1: {}
 
   is-unsafe@2.0.0: {}
 
