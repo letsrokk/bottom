@@ -3,8 +3,6 @@ name: Auto-merge watcher
 on:
   repository_dispatch:
     types: [watch-auto-merge]
-  schedule:
-    - cron: "17 * * * *"
 
 permissions: {}
 
@@ -105,33 +103,4 @@ jobs:
             else
               echo "Source branch moved after merge; leaving it in place"
             fi
-          fi
-
-  reconcile:
-    name: Reconcile Pages deployment
-    if: github.event_name == 'schedule'
-    permissions:
-      actions: write
-      contents: read
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - name: Dispatch a missing main deployment
-        env:
-          GH_TOKEN: ${{ github.token }}
-          REPOSITORY: ${{ github.repository }}
-        run: |
-          main_sha=$(gh api "repos/$REPOSITORY/commits/main" --jq '.sha')
-          has_run=$(
-            gh run list --repo "$REPOSITORY" --workflow deploy.yml \
-              --branch main --limit 20 \
-              --json headSha,status,conclusion \
-              --jq "any(.[]; .headSha == \"$main_sha\" and
-                (.status != \"completed\" or
-                .conclusion == \"success\"))"
-          )
-
-          if [[ "$has_run" == "false" ]]; then
-            gh workflow run deploy.yml --repo "$REPOSITORY" \
-              --ref main -f "expected_sha=$main_sha"
           fi
