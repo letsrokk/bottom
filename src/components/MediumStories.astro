@@ -20,7 +20,7 @@ const { profileUrl, stories } = Astro.props;
     <h3 id="latest-stories-heading" class="text-xl font-semibold tracking-wide">
       Latest stories
     </h3>
-    <LinkButton href={profileUrl}>
+    <LinkButton href={profileUrl} target="_blank" rel="noopener noreferrer">
       More on Medium
       <IconArrowRight class="inline-block rtl:-rotate-180" />
     </LinkButton>

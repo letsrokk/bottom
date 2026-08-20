@@ -5,6 +5,33 @@ import MediumStories from "./MediumStories.astro";
 const profileUrl = "https://letsrokk.medium.com";
 
 describe("MediumStories", () => {
+  it("opens only the Medium profile link in a new tab", async () => {
+    const container = await AstroContainer.create();
+    const html = await container.renderToString(MediumStories, {
+      props: {
+        profileUrl,
+        stories: [
+          {
+            title: "A Medium story",
+            url: "https://medium.com/@letsrokk/a-story",
+            publishedAt: "2026-08-20T08:00:00.000Z",
+            excerpt: "A concise story excerpt.",
+          },
+        ],
+      },
+    });
+    const profileLink = html.match(
+      new RegExp(`<a[^>]*href="${profileUrl}"[^>]*>`)
+    )?.[0];
+    const storyLink = html.match(
+      /<a[^>]*href="https:\/\/medium\.com\/@letsrokk\/a-story"[^>]*>/
+    )?.[0];
+
+    expect(profileLink).toContain('target="_blank"');
+    expect(profileLink).toContain('rel="noopener noreferrer"');
+    expect(storyLink).not.toContain('target="_blank"');
+  });
+
   it("renders story details and keeps the profile link beside the heading", async () => {
     const container = await AstroContainer.create();
     const html = await container.renderToString(MediumStories, {
