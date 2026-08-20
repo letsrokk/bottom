@@ -92,4 +92,10 @@ describe("GitHub Actions security", () => {
       deployWorkflow.match(/github\.ref == 'refs\/heads\/main'/g)
     ).toHaveLength(2);
   });
+
+  test("rebuilds the Pages site daily for external feed updates", () => {
+    expect(deployWorkflow).toMatch(
+      /schedule:\s*\n\s+- cron: ["']17 5 \* \* \*["']/
+    );
+  });
 });
